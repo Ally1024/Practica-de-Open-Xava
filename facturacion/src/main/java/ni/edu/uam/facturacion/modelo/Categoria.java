@@ -1,5 +1,6 @@
 package ni.edu.uam.facturacion.modelo;
-import jdk.internal.vm.annotation.Hidden;
+import org.openxava.annotations.Hidden;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;

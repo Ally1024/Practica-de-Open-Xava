@@ -2,6 +2,8 @@ package ni.edu.uam.facturacion.modelo;
 
 import java.time.*;
 import javax.persistence.*;
+
+import com.tuempresa.facturacion.calculadores.CalculadorSiguienteNumeroParaAnyo;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
@@ -30,5 +32,14 @@ public class Factura {
 
     @TextArea
     String observaciones;
+
+    @Column(length=6)
+    @DefaultValueCalculator(value= CalculadorSiguienteNumeroParaAnyo.class,
+            properties=@PropertyValue(name="anyo") // Para inyectar el valor de anyo de Factura
+            // en el calculador antes de llamar a calculate()
+    )
+    int num;
+    @ManyToOne(fetch=FetchType.LAZY, optional=false) // El cliente es obligatorio
+    Cliente cliente;
 
 }
