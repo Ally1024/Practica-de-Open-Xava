@@ -1,6 +1,7 @@
 package ni.edu.uam.facturacion.modelo;
 
 import java.time.*;
+import java.util.Collection;
 import javax.persistence.*;
 
 import com.tuempresa.facturacion.calculadores.CalculadorSiguienteNumeroParaAnyo;
@@ -9,7 +10,15 @@ import org.openxava.annotations.*;
 import org.openxava.calculators.*;
 import lombok.*;
 
-@Entity @Getter @Setter
+@Entity
+@Getter
+@Setter
+@View(members=
+        "anyo, numero, fecha;" +
+                "cliente;" +
+                "detalles;" +
+                "observaciones"
+)
 public class Factura {
 
     @Id
@@ -20,26 +29,31 @@ public class Factura {
     String oid;
 
     @Column(length=4)
-    @DefaultValueCalculator(CurrentYearCalculator.class) // Año actual
+    @DefaultValueCalculator(CurrentYearCalculator.class)
     int anyo;
 
     @Column(length=6)
     int numero;
 
     @Required
-    @DefaultValueCalculator(CurrentLocalDateCalculator.class) // Fecha actual
+    @DefaultValueCalculator(CurrentLocalDateCalculator.class)
     LocalDate fecha;
 
     @TextArea
     String observaciones;
 
     @Column(length=6)
-    @DefaultValueCalculator(value= CalculadorSiguienteNumeroParaAnyo.class,
-            properties=@PropertyValue(name="anyo") // Para inyectar el valor de anyo de Factura
-            // en el calculador antes de llamar a calculate()
+    @DefaultValueCalculator(
+            value=CalculadorSiguienteNumeroParaAnyo.class,
+            properties=@PropertyValue(name="anyo")
     )
     int num;
-    @ManyToOne(fetch=FetchType.LAZY, optional=false) // El cliente es obligatorio
+
+    // ? Aquí está la forma correcta
+    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @ReferenceView("Simple")
     Cliente cliente;
 
+    @ElementCollection
+    Collection<Detalle> detalles;
 }
